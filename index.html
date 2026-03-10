@@ -27,7 +27,7 @@
 
     const { useState } = React;
 
-    const p = 0.1;
+    const p = 1/600;
 
     function calcData(maxTrials) {
       return Array.from({ length: maxTrials }, (_, i) => {
@@ -52,7 +52,7 @@
     };
 
     function App() {
-      const data = calcData(50);
+      const data = calcData(2000);
 
       return (
         <div style={{ minHeight: "100vh", background: "#020817", fontFamily: "'DM Sans', sans-serif", color: "#e2e8f0", padding: "40px 24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -65,13 +65,13 @@
               The dice doesn't <span style={{ color: "#f59e0b" }}>remember</span> the last roll.
             </h1>
             <p style={{ fontSize: 15, lineHeight: 1.7, color: "#94a3b8" }}>
-              Say something has a <strong style={{ color: "#f8fafc" }}>10% chance</strong> of happening. Every single attempt, the chance is exactly 10%. No memory. No "owing" you a win.
+              Say something has a <strong style={{ color: "#f8fafc" }}>1-in-600 chance</strong> of happening. Every single attempt, the chance is exactly 0.167%. No memory. No "owing" you a win.
             </p>
           </div>
 
           <div style={{ maxWidth: 680, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
             {[
-              { label: "Each attempt", value: "10%", desc: "Always. Every time. No matter what happened before.", color: "#64748b", border: "#334155" },
+              { label: "Each attempt", value: "1/600", desc: "Always. Every time. No matter what happened before.", color: "#64748b", border: "#334155" },
               { label: "Over many attempts", value: "grows →", desc: "More tries = more chances of it happening at least once.", color: "#f59e0b", border: "#78350f" }
             ].map(card => (
               <div key={card.label} style={{ background: "#0f172a", border: `1px solid ${card.border}`, borderRadius: 12, padding: "20px 24px" }}>
@@ -83,21 +83,21 @@
           </div>
 
           <div style={{ maxWidth: 680, width: "100%", background: "#0f172a", border: "1px solid #1e293b", borderRadius: 16, padding: "28px 24px 20px", marginBottom: 32 }}>
-            <div style={{ marginBottom: 6, fontSize: 14, color: "#94a3b8" }}>Probability of the 10% event happening <em>at least once</em> over N attempts</div>
-            <div style={{ fontSize: 12, color: "#475569", marginBottom: 24, fontFamily: "'DM Mono', monospace" }}>Formula: 1 − (0.9)ⁿ</div>
+            <div style={{ marginBottom: 6, fontSize: 14, color: "#94a3b8" }}>Probability of the 1/600 event happening <em>at least once</em> over N attempts</div>
+            <div style={{ fontSize: 12, color: "#475569", marginBottom: 24, fontFamily: "'DM Mono', monospace" }}>Formula: 1 − (599/600)ⁿ</div>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="n" stroke="#334155" tick={{ fill: "#64748b", fontSize: 12 }} label={{ value: "Number of attempts", position: "insideBottom", offset: -4, fill: "#475569", fontSize: 12 }} height={40} />
                 <YAxis stroke="#334155" tick={{ fill: "#64748b", fontSize: 12 }} tickFormatter={v => `${v}%`} domain={[0, 100]} />
                 <Tooltip content={<CustomTooltip />} />
-                <ReferenceLine y={10} stroke="#475569" strokeDasharray="4 4" label={{ value: "10% (each attempt)", position: "insideTopRight", fill: "#475569", fontSize: 11 }} />
-                <ReferenceLine y={63.5} stroke="#1d4ed8" strokeDasharray="4 4" label={{ value: "~64% at n=10", position: "insideTopRight", fill: "#3b82f6", fontSize: 11 }} />
+                <ReferenceLine y={0.167} stroke="#475569" strokeDasharray="4 4" label={{ value: "0.167% (each attempt)", position: "insideTopRight", fill: "#475569", fontSize: 11 }} />
+                <ReferenceLine y={63.2} stroke="#1d4ed8" strokeDasharray="4 4" label={{ value: "~63% at n=600", position: "insideTopRight", fill: "#3b82f6", fontSize: 11 }} />
                 <Line type="monotone" dataKey="cumulative" stroke="#f59e0b" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: "#f59e0b" }} />
               </LineChart>
             </ResponsiveContainer>
             <div style={{ marginTop: 16, padding: "12px 16px", background: "#0d1526", borderRadius: 8, border: "1px solid #1e3a5f", fontSize: 13, color: "#93c5fd" }}>
-              💡 After <strong>10 attempts</strong>, you have a ~65% chance of seeing it at least once — yet each attempt is still just 10%.
+              💡 After <strong>600 attempts</strong>, you have a ~63% chance of seeing it at least once — yet each attempt is still just 1-in-600.
             </div>
           </div>
 
