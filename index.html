@@ -44,7 +44,7 @@
           <div style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>
             <div style={{ color: "#94a3b8", marginBottom: 4 }}>After <strong style={{ color: "#f8fafc" }}>{d.n}</strong> attempt{d.n > 1 ? "s" : ""}</div>
             <div style={{ color: "#f59e0b" }}>At least once: <strong>{d.cumulative}%</strong></div>
-            <div style={{ color: "#64748b", marginTop: 4 }}>This attempt: still 10%</div>
+            <div style={{ color: "#64748b", marginTop: 4 }}>This attempt: still 0.167%</div>
           </div>
         );
       }
@@ -105,7 +105,7 @@
             <h2 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 16px", color: "#f8fafc" }}>Why our brains get this wrong</h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               {[
-                { q: '"What are the odds on THIS roll?"', a: "Always 10%. History is irrelevant.", icon: "🎲" },
+                { q: '"What are the odds on THIS roll?"', a: "Always 1/600 (0.167%). History is irrelevant.", icon: "🎲" },
                 { q: '"What are the odds I\'ll see it at least once in N rolls?"', a: "Grows with each attempt — but the individual roll never changes.", icon: "📈" },
               ].map(item => (
                 <div key={item.q} style={{ background: "#020817", border: "1px solid #1e293b", borderRadius: 10, padding: "14px 16px", display: "flex", gap: 14, alignItems: "flex-start" }}>
