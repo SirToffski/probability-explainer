@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Probability Explainer</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.8.0/Recharts.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #020817; }
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const {
+      LineChart, Line, XAxis, YAxis, CartesianGrid,
+      Tooltip, ReferenceLine, ResponsiveContainer
+    } = Recharts;
+
+    const { useState } = React;
+
+    const p = 0.1;
+
+    function calcData(maxTrials) {
+      return Array.from({ length: maxTrials }, (_, i) => {
+        const n = i + 1;
+        const probAtLeastOnce = 1 - Math.pow(1 - p, n);
+        return { n, cumulative: +(probAtLeastOnce * 100).toFixed(2) };
+      });
+    }
+
+    const CustomTooltip = ({ active, payload }) => {
+      if (active && payload && payload.length) {
+        const d = payload[0].payload;
+        return (
+          <div style={{ background: "#0f172a", border: "1px solid #334155", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#e2e8f0", fontFamily: "'DM Mono', monospace" }}>
+            <div style={{ color: "#94a3b8", marginBottom: 4 }}>After <strong style={{ color: "#f8fafc" }}>{d.n}</strong> attempt{d.n > 1 ? "s" : ""}</div>
+            <div style={{ color: "#f59e0b" }}>At least once: <strong>{d.cumulative}%</strong></div>
+            <div style={{ color: "#64748b", marginTop: 4 }}>This attempt: still 10%</div>
+          </div>
+        );
+      }
+      return null;
+    };
+
+    function App() {
+      const data = calcData(50);
+
+      return (
+        <div style={{ minHeight: "100vh", background: "#020817", fontFamily: "'DM Sans', sans-serif", color: "#e2e8f0", padding: "40px 24px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+
+          <div style={{ maxWidth: 680, width: "100%", marginBottom: 36 }}>
+            <div style={{ display: "inline-block", background: "#1e293b", border: "1px solid #334155", borderRadius: 6, padding: "4px 12px", fontSize: 11, color: "#64748b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20, fontFamily: "'DM Mono', monospace" }}>
+              Probability explainer
+            </div>
+            <h1 style={{ fontSize: "clamp(26px, 5vw, 40px)", fontWeight: 600, margin: "0 0 16px", lineHeight: 1.2, color: "#f8fafc" }}>
+              The dice doesn't <span style={{ color: "#f59e0b" }}>remember</span> the last roll.
+            </h1>
+            <p style={{ fontSize: 15, lineHeight: 1.7, color: "#94a3b8" }}>
+              Say something has a <strong style={{ color: "#f8fafc" }}>10% chance</strong> of happening. Every single attempt, the chance is exactly 10%. No memory. No "owing" you a win.
+            </p>
+          </div>
+
+          <div style={{ maxWidth: 680, width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }}>
+            {[
+              { label: "Each attempt", value: "10%", desc: "Always. Every time. No matter what happened before.", color: "#64748b", border: "#334155" },
+              { label: "Over many attempts", value: "grows →", desc: "More tries = more chances of it happening at least once.", color: "#f59e0b", border: "#78350f" }
+            ].map(card => (
+              <div key={card.label} style={{ background: "#0f172a", border: `1px solid ${card.border}`, borderRadius: 12, padding: "20px 24px" }}>
+                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8, fontFamily: "'DM Mono', monospace" }}>{card.label}</div>
+                <div style={{ fontSize: 30, fontWeight: 600, color: card.color, marginBottom: 8 }}>{card.value}</div>
+                <div style={{ fontSize: 13, color: "#64748b", lineHeight: 1.5 }}>{card.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ maxWidth: 680, width: "100%", background: "#0f172a", border: "1px solid #1e293b", borderRadius: 16, padding: "28px 24px 20px", marginBottom: 32 }}>
+            <div style={{ marginBottom: 6, fontSize: 14, color: "#94a3b8" }}>Probability of the 10% event happening <em>at least once</em> over N attempts</div>
+            <div style={{ fontSize: 12, color: "#475569", marginBottom: 24, fontFamily: "'DM Mono', monospace" }}>Formula: 1 − (0.9)ⁿ</div>
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="n" stroke="#334155" tick={{ fill: "#64748b", fontSize: 12 }} label={{ value: "Number of attempts", position: "insideBottom", offset: -4, fill: "#475569", fontSize: 12 }} height={40} />
+                <YAxis stroke="#334155" tick={{ fill: "#64748b", fontSize: 12 }} tickFormatter={v => `${v}%`} domain={[0, 100]} />
+                <Tooltip content={<CustomTooltip />} />
+                <ReferenceLine y={10} stroke="#475569" strokeDasharray="4 4" label={{ value: "10% (each attempt)", position: "insideTopRight", fill: "#475569", fontSize: 11 }} />
+                <ReferenceLine y={63.5} stroke="#1d4ed8" strokeDasharray="4 4" label={{ value: "~64% at n=10", position: "insideTopRight", fill: "#3b82f6", fontSize: 11 }} />
+                <Line type="monotone" dataKey="cumulative" stroke="#f59e0b" strokeWidth={2.5} dot={false} activeDot={{ r: 5, fill: "#f59e0b" }} />
+              </LineChart>
+            </ResponsiveContainer>
+            <div style={{ marginTop: 16, padding: "12px 16px", background: "#0d1526", borderRadius: 8, border: "1px solid #1e3a5f", fontSize: 13, color: "#93c5fd" }}>
+              💡 After <strong>10 attempts</strong>, you have a ~65% chance of seeing it at least once — yet each attempt is still just 10%.
+            </div>
+          </div>
+
+          <div style={{ maxWidth: 680, width: "100%", background: "#0f172a", border: "1px solid #334155", borderRadius: 16, padding: "24px" }}>
+            <h2 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 16px", color: "#f8fafc" }}>Why our brains get this wrong</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {[
+                { q: '"What are the odds on THIS roll?"', a: "Always 10%. History is irrelevant.", icon: "🎲" },
+                { q: '"What are the odds I\'ll see it at least once in N rolls?"', a: "Grows with each attempt — but the individual roll never changes.", icon: "📈" },
+              ].map(item => (
+                <div key={item.q} style={{ background: "#020817", border: "1px solid #1e293b", borderRadius: 10, padding: "14px 16px", display: "flex", gap: 14, alignItems: "flex-start" }}>
+                  <span style={{ fontSize: 20, flexShrink: 0 }}>{item.icon}</span>
+                  <div>
+                    <div style={{ fontSize: 14, color: "#f8fafc", fontWeight: 500, marginBottom: 4 }}>{item.q}</div>
+                    <div style={{ fontSize: 13, color: "#64748b" }}>{item.a}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 13, color: "#64748b", lineHeight: 1.7, margin: "16px 0 0" }}>
+              Thinking past failures "charge up" future probability is called the <strong style={{ color: "#94a3b8" }}>Gambler's Fallacy</strong>. Casinos love it.
+            </p>
+          </div>
+
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+  </script>
+</body>
+</html>
